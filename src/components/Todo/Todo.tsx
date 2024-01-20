@@ -1,4 +1,4 @@
-import { Dispatch, memo } from "react";
+import { Dispatch, memo, useCallback } from "react";
 import { useTypedSelector } from "../../hooks/reduxHooks";
 
 import MenuComponent from "../Menu";
@@ -38,17 +38,28 @@ const TodoComponent = memo(function TodoComponent({
     (state) => state.menu
   );
 
-  const openBoardMenu = (boardId: number, todoId: number) => {
-    dispatch(openMenu({ boardId, todoId }));
-  };
+  const openBoardMenu = useCallback(
+    (board: Board, todo: Todo) => {
+      dispatch(openMenu({ boardId: board.id, todoId: todo.id }));
+    },
+    [dispatch, board, todo]
+  );
 
-  const onEditHandle = (board: Board, todo: Todo) => {
-    onEdit(board, todo, dispatch);
-  };
+  const onEditHandle = useCallback(
+    (board: Board, todo: Todo) => {
+      onEdit(board, todo, dispatch);
+    },
+    [dispatch, board, todo]
+  );
 
-  const onDeleteHandle = (boardId: number, todoId: number) => {
-    onDelete(boardId, todoId, dispatch);
-  };
+  const onDeleteHandle = useCallback(
+    (board: Board, todo: Todo) => {
+      onDelete(board.id, todo.id, dispatch);
+    },
+    [board, todo, dispatch]
+  );
+
+  console.log("rerender");
 
   return (
     <li
@@ -67,13 +78,13 @@ const TodoComponent = memo(function TodoComponent({
       {isMenuOpen && boardId === board.id && todoId === todo.id && (
         <MenuComponent
           onEdit={() => onEditHandle(board, todo)}
-          onDelete={() => onDeleteHandle(board.id, todo.id)}
+          onDelete={() => onDeleteHandle(board, todo)}
         />
       )}
 
       <button
         className="ml-2 p-1 h-8 w-8 hover:bg-[#9b4ee4] transition-all duration-300 rounded-full"
-        onClick={() => openBoardMenu(board.id, todo.id)}
+        onClick={() => openBoardMenu(board, todo)}
       >
         <MenuIcon />
       </button>
