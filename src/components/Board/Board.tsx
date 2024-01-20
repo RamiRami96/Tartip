@@ -1,3 +1,4 @@
+import { Dispatch } from "react";
 import { BoardTitle } from "./BoardTitle";
 import TodoComponent from "../Todo";
 
@@ -14,7 +15,6 @@ import { closeMenu } from "../../state/slices/menuSlice";
 import { Board } from "../../models/board.model";
 import { Todo } from "../../models/todo.model";
 import { useAppDispatch, useTypedSelector } from "../../hooks/reduxHooks";
-import { Dispatch } from "react";
 
 function BoardComponent() {
   const dispatch = useAppDispatch();
@@ -175,7 +175,9 @@ function BoardComponent() {
                     <li
                       data-item="todo"
                       className="h-[39vh]"
-                      onDrop={(e) => onDrop(e, board, null, dispatch)}
+                      onDrop={(e: React.DragEvent<HTMLLIElement>) =>
+                        onDrop(e, board, null, dispatch)
+                      }
                       onDragOver={onDragOver}
                     />
                   )}
