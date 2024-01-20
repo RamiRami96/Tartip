@@ -1,4 +1,4 @@
-import React, { Dispatch } from "react";
+import React, { Dispatch, useCallback } from "react";
 import { BoardTitle } from "./BoardTitle";
 import TodoComponent from "../Todo";
 
@@ -23,38 +23,44 @@ function BoardComponent() {
     (state) => state.boards
   );
 
-  const onDragStart = (board: Board, todo: Todo, dispatch: Dispatch<any>) => {
-    dispatch(setCurrentBoard({ currentBoard: board }));
-    dispatch(setCurrentTodo({ currentTodo: todo }));
-  };
+  const onDragStart = useCallback(
+    (board: Board, todo: Todo, dispatch: Dispatch<any>) => {
+      dispatch(setCurrentBoard({ currentBoard: board }));
+      dispatch(setCurrentTodo({ currentTodo: todo }));
+    },
+    []
+  );
 
-  const onDrop = (
-    e: React.DragEvent<HTMLLIElement>,
-    targetBoard: Board,
-    targetTodo: Todo | null,
-    dispatch: Dispatch<any>
-  ) => {
-    e.preventDefault();
+  const onDrop = useCallback(
+    (
+      e: React.DragEvent<HTMLLIElement>,
+      targetBoard: Board,
+      targetTodo: Todo | null,
+      dispatch: Dispatch<any>
+    ) => {
+      e.preventDefault();
 
-    const targetElement = e.currentTarget as HTMLLIElement;
-    targetElement.style.borderColor = "#fff";
+      const targetElement = e.currentTarget as HTMLLIElement;
+      targetElement.style.borderColor = "#fff";
 
-    if (currentBoard && currentTodo) {
-      const sourceBoardId = currentBoard.id;
-      const sourceTodoId = currentTodo.id;
+      if (currentBoard && currentTodo) {
+        const sourceBoardId = currentBoard.id;
+        const sourceTodoId = currentTodo.id;
 
-      dispatch(
-        moveTodo({
-          sourceBoardId,
-          sourceTodoId,
-          targetBoard,
-          targetTodo,
-        })
-      );
-    }
-  };
+        dispatch(
+          moveTodo({
+            sourceBoardId,
+            sourceTodoId,
+            targetBoard,
+            targetTodo,
+          })
+        );
+      }
+    },
+    [dispatch, currentBoard, currentTodo]
+  );
 
-  const onDragOver = (e: React.DragEvent<HTMLLIElement>) => {
+  const onDragOver = useCallback((e: React.DragEvent<HTMLLIElement>) => {
     e.preventDefault();
 
     const isTodoItem = e.currentTarget.dataset.item === "todo";
@@ -63,12 +69,12 @@ function BoardComponent() {
       const targetElement = e.currentTarget as HTMLLIElement;
       targetElement.style.borderColor = "#9999EA";
     }
-  };
+  }, []);
 
-  const onDragEnd = (e: React.DragEvent<HTMLLIElement>) => {
+  const onDragEnd = useCallback((e: React.DragEvent<HTMLLIElement>) => {
     const targetElement = e.currentTarget as HTMLLIElement;
     targetElement.style.borderColor = "#fff";
-  };
+  }, []);
 
   const addBoard = (dispatch: Dispatch<any>) => {
     dispatch(
@@ -80,7 +86,7 @@ function BoardComponent() {
     );
   };
 
-  const onEditBoard = (board: Board, dispatch: Dispatch<any>) => {
+  const onEditBoard = useCallback((board: Board, dispatch: Dispatch<any>) => {
     dispatch(setCurrentBoard({ currentBoard: board }));
 
     dispatch(
@@ -93,12 +99,15 @@ function BoardComponent() {
     );
 
     dispatch(closeMenu());
-  };
+  }, []);
 
-  const onDeleteBoard = (boardId: number, dispatch: Dispatch<any>) => {
-    dispatch(deleteBoard({ boardId }));
-    dispatch(closeMenu());
-  };
+  const onDeleteBoard = useCallback(
+    (boardId: number, dispatch: Dispatch<any>) => {
+      dispatch(deleteBoard({ boardId }));
+      dispatch(closeMenu());
+    },
+    []
+  );
 
   const addTodo = (currentBoard: Board, dispatch: Dispatch<any>) => {
     dispatch(setCurrentBoard({ currentBoard }));
@@ -112,27 +121,29 @@ function BoardComponent() {
     );
   };
 
-  const onEditTodo = (board: Board, todo: Todo, dispatch: Dispatch<any>) => {
-    dispatch(setCurrentBoard({ currentBoard: board }));
-    dispatch(setCurrentTodo({ currentTodo: todo }));
+  const onEditTodo = useCallback(
+    (board: Board, todo: Todo, dispatch: Dispatch<any>) => {
+      dispatch(setCurrentBoard({ currentBoard: board }));
+      dispatch(setCurrentTodo({ currentTodo: todo }));
 
-    dispatch(
-      openModal({
-        modalTitle: "Edit todo",
-        modalPlaceholder: "Enter new title of todo",
-        modalMode: "editTodo",
-        buttonText: "Edit",
-      })
-    );
-  };
+      dispatch(
+        openModal({
+          modalTitle: "Edit todo",
+          modalPlaceholder: "Enter new title of todo",
+          modalMode: "editTodo",
+          buttonText: "Edit",
+        })
+      );
+    },
+    []
+  );
 
-  const onDeleteTodo = (
-    boardId: number,
-    todoId: number,
-    dispatch: Dispatch<any>
-  ) => {
-    dispatch(deleteTodo({ boardId, todoId }));
-  };
+  const onDeleteTodo = useCallback(
+    (boardId: number, todoId: number, dispatch: Dispatch<any>) => {
+      dispatch(deleteTodo({ boardId, todoId }));
+    },
+    []
+  );
 
   return (
     <div className="mt-16">
