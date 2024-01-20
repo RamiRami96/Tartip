@@ -1,6 +1,7 @@
 import { Dispatch } from "react";
 import { BoardTitle } from "./BoardTitle";
 import TodoComponent from "../Todo";
+import MenuComponent from "../Menu";
 
 import {
   deleteBoard,
@@ -21,6 +22,10 @@ function BoardComponent() {
 
   const { boards, currentBoard, currentTodo } = useTypedSelector(
     (state) => state.boards
+  );
+
+  const { isMenuOpen, boardId, todoId } = useTypedSelector(
+    (state) => state.menu
   );
 
   const onDragStart = (board: Board, todo: Todo, dispatch: Dispatch<any>) => {
@@ -158,18 +163,28 @@ function BoardComponent() {
                 </button>
                 <ul>
                   {board.todos.map((todo) => (
-                    <TodoComponent
-                      key={todo.id}
-                      todo={todo}
-                      board={board}
-                      onDragStart={() => onDragStart(board, todo, dispatch)}
-                      onDrop={(e) => onDrop(e, board, todo, dispatch)}
-                      onDragOver={onDragOver}
-                      onDragEnd={onDragEnd}
-                      onEdit={onEditTodo}
-                      onDelete={onDeleteTodo}
-                      dispatch={dispatch}
-                    />
+                    <>
+                      <TodoComponent
+                        key={todo.id}
+                        todo={todo}
+                        board={board}
+                        onDragStart={() => onDragStart(board, todo, dispatch)}
+                        onDrop={(e) => onDrop(e, board, todo, dispatch)}
+                        onDragOver={onDragOver}
+                        onDragEnd={onDragEnd}
+                        dispatch={dispatch}
+                      />
+                      {isMenuOpen &&
+                        boardId === board.id &&
+                        todoId === todo.id && (
+                          <MenuComponent
+                            onEdit={() => onEditTodo(board, todo, dispatch)}
+                            onDelete={() =>
+                              onDeleteTodo(board.id, todo.id, dispatch)
+                            }
+                          />
+                        )}
+                    </>
                   ))}
                   {board.todos.length <= 4 && (
                     <li
