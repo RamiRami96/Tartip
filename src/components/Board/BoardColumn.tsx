@@ -31,16 +31,16 @@ type Props = {
 
 export const BoardColumn = memo(function BoardColumn({
   boards,
+  addBoard,
   onEditBoard,
   onDeleteBoard,
   addTodo,
+  onEditTodo,
+  onDeleteTodo,
   onDragStart,
   onDrop,
   onDragOver,
   onDragEnd,
-  onEditTodo,
-  onDeleteTodo,
-  addBoard,
   dispatch,
 }: Props) {
   return (

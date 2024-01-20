@@ -3,7 +3,6 @@ import { useTypedSelector } from "../../hooks/reduxHooks";
 
 import MenuComponent from "../Menu";
 import { openMenu } from "../../state/slices/menuSlice";
-import { RootState } from "../../state/store";
 import { Board } from "../../models/board.model";
 import { Todo } from "../../models/todo.model";
 import { MenuIcon } from "../../icons/MenuIcon";
@@ -36,7 +35,7 @@ const TodoComponent = memo(function TodoComponent({
   dispatch,
 }: Props) {
   const { isMenuOpen, boardId, todoId } = useTypedSelector(
-    (state: RootState) => state.menu
+    (state) => state.menu
   );
 
   const openBoardMenu = (boardId: number, todoId: number) => {
