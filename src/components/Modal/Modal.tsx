@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useTypedSelector } from "../../hooks/reduxHooks";
 
 import {
   editBoard,
@@ -8,35 +8,31 @@ import {
   setTodo,
 } from "../../state/slices/boardSlice";
 import { closeModal } from "../../state/slices/modalSlice";
-import { RootState } from "../../state/store";
 import { generateUniqueId } from "../../helpers/generateUniqueId";
+import { modalMode } from "../../models/modalMode.model";
 
 function Modal() {
-  const dispatch = useDispatch();
-  const { modalPlaceholder, modalTitle, modalMode, buttonText } = useSelector(
-    (state: RootState) => state.modal
-  );
-  const { currentBoard, currentTodo } = useSelector(
-    (state: RootState) => state.boards
+  const dispatch = useAppDispatch();
+  const { modalPlaceholder, modalTitle, modalMode, buttonText } =
+    useTypedSelector((state) => state.modal);
+  const { currentBoard, currentTodo } = useTypedSelector(
+    (state) => state.boards
   );
 
   const [value, setValue] = useState(() => {
     switch (modalMode) {
       case "editBoard":
-        return currentBoard?.name || "";
+        return currentBoard?.name;
       case "editTodo":
-        return currentTodo?.title || "";
+        return currentTodo?.title;
       default:
         return "";
     }
   });
-
   const [error, setError] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = (
-    mode: "default" | "addBoard" | "editBoard" | "addTodo" | "editTodo"
-  ) => {
+  const handleSubmit = (mode: modalMode) => {
     if (!value) {
       setError("value required!");
       return;

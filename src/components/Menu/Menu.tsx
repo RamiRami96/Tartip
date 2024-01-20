@@ -1,15 +1,15 @@
-import { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { memo, useEffect, useRef } from "react";
+import { useAppDispatch } from "../../hooks/reduxHooks";
 
 import { closeMenu } from "../../state/slices/menuSlice";
 
 type Props = {
-  onEdit: <T>(item: T) => void;
+  onEdit: () => void;
   onDelete: () => void;
 };
 
-function Menu({ onEdit, onDelete }: Props) {
-  const dispatch = useDispatch();
+const Menu = memo(function Menu({ onEdit, onDelete }: Props) {
+  const dispatch = useAppDispatch();
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,6 +24,17 @@ function Menu({ onEdit, onDelete }: Props) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleEdit = () => {
+    onEdit();
+    dispatch(closeMenu());
+  };
+
+  const handleDelete = () => {
+    onDelete();
+    dispatch(closeMenu());
+  };
+
   return (
     <div
       ref={menuRef}
@@ -31,18 +42,18 @@ function Menu({ onEdit, onDelete }: Props) {
     >
       <button
         className="cursor-pointer text-color hover:bg-gray-500 hover:text-white p-2 w-full"
-        onClick={onEdit}
+        onClick={handleEdit}
       >
         Edit item
       </button>
       <button
         className="cursor-pointer text-color hover:bg-gray-500 hover:text-white p-2 w-full"
-        onClick={onDelete}
+        onClick={handleDelete}
       >
         Delete item
       </button>
     </div>
   );
-}
+});
 
 export default Menu;

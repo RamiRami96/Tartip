@@ -1,8 +1,8 @@
-import { memo } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { Dispatch, memo } from "react";
+import { useTypedSelector } from "../../hooks/reduxHooks";
 
 import MenuComponent from "../Menu";
-import { closeMenu, openMenu } from "../../state/slices/menuSlice";
+import { openMenu } from "../../state/slices/menuSlice";
 import { RootState } from "../../state/store";
 import { Board } from "../../models/board.model";
 import { Todo } from "../../models/todo.model";
@@ -19,8 +19,9 @@ type Props = {
   ) => void;
   onDragOver: (e: React.DragEvent<HTMLLIElement>) => void;
   onDragEnd: (e: React.DragEvent<HTMLLIElement>) => void;
-  onEdit: (board: Board, todo: Todo) => void;
-  onDelete: (boardId: number, todoId: number) => void;
+  onEdit: (board: Board, todo: Todo, dispatch: Dispatch<any>) => void;
+  onDelete: (boardId: number, todoId: number, dispatch: Dispatch<any>) => void;
+  dispatch: Dispatch<any>;
 };
 
 const TodoComponent = memo(function TodoComponent({
@@ -32,10 +33,9 @@ const TodoComponent = memo(function TodoComponent({
   onDragEnd,
   onEdit,
   onDelete,
+  dispatch,
 }: Props) {
-  const dispatch = useDispatch();
-
-  const { isMenuOpen, boardId, todoId } = useSelector(
+  const { isMenuOpen, boardId, todoId } = useTypedSelector(
     (state: RootState) => state.menu
   );
 
@@ -44,13 +44,11 @@ const TodoComponent = memo(function TodoComponent({
   };
 
   const onEditHandle = (board: Board, todo: Todo) => {
-    onEdit(board, todo);
-    dispatch(closeMenu());
+    onEdit(board, todo, dispatch);
   };
 
   const onDeleteHandle = (boardId: number, todoId: number) => {
-    onDelete(boardId, todoId);
-    dispatch(closeMenu());
+    onDelete(boardId, todoId, dispatch);
   };
 
   return (

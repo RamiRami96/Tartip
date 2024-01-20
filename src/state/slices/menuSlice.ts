@@ -1,20 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-export interface MenuState {
-  isMenuOpen: boolean;
-  boardId: number | null;
-  todoId: number | null;
-}
-
-const initialState: MenuState = {
-  isMenuOpen: false,
-  boardId: null,
-  todoId: null,
-};
+import { initialStateMenu } from "../initialStates/menuState";
 
 export const menuSlice = createSlice({
   name: "menu",
-  initialState,
+  initialState: initialStateMenu,
   reducers: {
     openMenu: (
       state,

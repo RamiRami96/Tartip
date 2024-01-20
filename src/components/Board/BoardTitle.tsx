@@ -1,21 +1,26 @@
-import { useSelector, useDispatch } from "react-redux";
+import { memo } from "react";
+import { useAppDispatch, useTypedSelector } from "../../hooks/reduxHooks";
 
 import MenuComponent from "../Menu";
-import { RootState } from "../../state/store";
 import { openMenu } from "../../state/slices/menuSlice";
 
 type Props = {
   id: number;
   title: string;
-  onEdit: <T>(item: T) => void;
+  onEdit: () => void;
   onDelete: () => void;
 };
 
-export function BoardTitle({ id, title, onEdit, onDelete }: Props) {
-  const dispatch = useDispatch();
+export const BoardTitle = memo(function BoardTitle({
+  id,
+  title,
+  onEdit,
+  onDelete,
+}: Props) {
+  const dispatch = useAppDispatch();
 
-  const { isMenuOpen, boardId, todoId } = useSelector(
-    (state: RootState) => state.menu
+  const { isMenuOpen, boardId, todoId } = useTypedSelector(
+    (state) => state.menu
   );
 
   const openBoardMenu = () => {
@@ -30,4 +35,4 @@ export function BoardTitle({ id, title, onEdit, onDelete }: Props) {
       )}
     </button>
   );
-}
+});

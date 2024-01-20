@@ -1,54 +1,12 @@
 import { createSlice, PayloadAction, current } from "@reduxjs/toolkit";
-import { generateUniqueId } from "../../helpers/generateUniqueId";
 import { Board } from "../../models/board.model";
 import { Todo } from "../../models/todo.model";
-
-export interface BoardState {
-  boards: Board[];
-  currentBoard: null | Board;
-  currentTodo: null | Todo;
-}
-
-const initialState: BoardState = {
-  boards: [
-    {
-      id: 1,
-      name: "Health",
-      todos: [
-        {
-          id: 6,
-          title: "1. todo first a 2. to do second 3. To do third",
-        },
-        { id: 1, title: "Todo 1" },
-        { id: 2, title: "Todo 2" },
-        { id: 3, title: "Todo 3" },
-        { id: 4, title: "Todo 4" },
-        { id: 5, title: "Todo 5" },
-      ],
-    },
-    {
-      id: 2,
-      name: "Work",
-      todos: [
-        {
-          id: 7,
-          title: "Todo 7",
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Find girlfriend",
-      todos: [],
-    },
-  ],
-  currentBoard: null,
-  currentTodo: null,
-};
+import { generateUniqueId } from "../../helpers/generateUniqueId";
+import { initialStateBoard } from "../initialStates/boardState";
 
 export const boardSlice = createSlice({
   name: "board",
-  initialState,
+  initialState: initialStateBoard,
   reducers: {
     setBoard: (
       state,
@@ -87,11 +45,8 @@ export const boardSlice = createSlice({
 
       if (boardIndex !== -1) {
         state.boards.splice(boardIndex, 1);
-
-        if (state.currentBoard && state.currentBoard.id === boardId) {
-          state.currentBoard = null;
-          state.currentTodo = null;
-        }
+        state.currentBoard = null;
+        state.currentTodo = null;
       }
     },
     moveTodo: (
@@ -125,19 +80,18 @@ export const boardSlice = createSlice({
         sourceBoardIndex
       ].todos.filter((todo) => todo.id !== sourceTodoId);
 
+      state.currentBoard = null;
+      state.currentTodo = null;
+
       if (targetTodo !== null) {
         state.boards[targetBoardIndex].todos.splice(
           targetTodoIndex,
           0,
           draggedTodo
         );
-        state.currentBoard = null;
-        state.currentTodo = null;
       } else {
         const newTodo = { id: generateUniqueId(), title: draggedTodo.title };
         state.boards[targetBoardIndex].todos.push(newTodo);
-        state.currentBoard = null;
-        state.currentTodo = null;
       }
     },
     setTodo: (

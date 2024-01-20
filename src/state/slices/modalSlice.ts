@@ -1,36 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-export interface ModalState {
-  isModalOpen: boolean;
-  modalTitle: string;
-  modalPlaceholder: string;
-  modalMode: "addBoard" | "editBoard" | "addTodo" | "editTodo" | "default";
-  buttonText: "Add" | "Edit";
-}
-
-const initialState: ModalState = {
-  isModalOpen: false,
-  modalTitle: "",
-  modalPlaceholder: "",
-  modalMode: "default",
-  buttonText: "Add",
-};
+import { modalMode } from "../../models/modalMode.model";
+import { initialStateModal } from "../initialStates/modalState";
 
 export const modalSlice = createSlice({
   name: "modal",
-  initialState,
+  initialState: initialStateModal,
   reducers: {
     openModal: (
       state,
       action: PayloadAction<{
         modalTitle: string;
         modalPlaceholder: string;
-        modalMode:
-          | "addBoard"
-          | "editBoard"
-          | "addTodo"
-          | "editTodo"
-          | "default";
+        modalMode: modalMode;
         buttonText?: "Add" | "Edit";
       }>
     ) => {
@@ -52,16 +33,9 @@ export const modalSlice = createSlice({
       state.modalPlaceholder = "";
       state.modalMode = "default";
     },
-    setModalTitle: (state, action) => {
-      state.modalTitle = action.payload;
-    },
-    setModalPlaceholder: (state, action) => {
-      state.modalPlaceholder = action.payload;
-    },
   },
 });
 
-export const { openModal, closeModal, setModalTitle, setModalPlaceholder } =
-  modalSlice.actions;
+export const { openModal, closeModal } = modalSlice.actions;
 
 export default modalSlice.reducer;

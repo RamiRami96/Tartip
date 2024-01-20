@@ -1,9 +1,4 @@
-import { useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
-
-import { BoardTitle } from "./BoardTitle";
-import TodoComponent from "../Todo";
-import ModalComponent from "../Modal";
+import { BoardColumn } from "./BoardColumn";
 
 import {
   deleteBoard,
@@ -13,72 +8,68 @@ import {
   setCurrentTodo,
 } from "../../state/slices/boardSlice";
 import { openModal } from "../../state/slices/modalSlice";
-import { RootState } from "../../state/store";
+import { closeMenu } from "../../state/slices/menuSlice";
 
 import { Board } from "../../models/board.model";
 import { Todo } from "../../models/todo.model";
-import { closeMenu } from "../../state/slices/menuSlice";
+import { useAppDispatch, useTypedSelector } from "../../hooks/reduxHooks";
+import { Dispatch } from "react";
 
 function BoardComponent() {
-  const dispatch = useDispatch();
-  const { boards, currentBoard, currentTodo } = useSelector(
-    (state: RootState) => state.boards
-  );
-  const { isModalOpen } = useSelector((state: RootState) => state.modal);
+  const dispatch = useAppDispatch();
 
-  const onDragStart = useCallback(
-    (board: Board, todo: Todo) => {
-      dispatch(setCurrentBoard({ currentBoard: board }));
-      dispatch(setCurrentTodo({ currentTodo: todo }));
-    },
-    [dispatch]
+  const { boards, currentBoard, currentTodo } = useTypedSelector(
+    (state) => state.boards
   );
 
-  const onDrop = useCallback(
-    (
-      e: React.DragEvent<HTMLLIElement>,
-      targetBoard: Board,
-      targetTodo: Todo | null
-    ) => {
-      e.preventDefault();
+  const onDragStart = (board: Board, todo: Todo, dispatch: Dispatch<any>) => {
+    dispatch(setCurrentBoard({ currentBoard: board }));
+    dispatch(setCurrentTodo({ currentTodo: todo }));
+  };
 
-      const targetElement = e.target as HTMLLIElement;
-      targetElement.style.borderColor = "#fff";
+  const onDrop = (
+    e: React.DragEvent<HTMLLIElement>,
+    targetBoard: Board,
+    targetTodo: Todo | null,
+    dispatch: Dispatch<any>
+  ) => {
+    e.preventDefault();
 
-      if (currentBoard && currentTodo) {
-        const sourceBoardId = currentBoard.id;
-        const sourceTodoId = currentTodo.id;
+    const targetElement = e.currentTarget as HTMLLIElement;
+    targetElement.style.borderColor = "#fff";
 
-        dispatch(
-          moveTodo({
-            sourceBoardId,
-            sourceTodoId,
-            targetBoard,
-            targetTodo,
-          })
-        );
-      }
-    },
-    [currentBoard, currentTodo, dispatch]
-  );
+    if (currentBoard && currentTodo) {
+      const sourceBoardId = currentBoard.id;
+      const sourceTodoId = currentTodo.id;
 
-  const onDragOver = useCallback((e: React.DragEvent<HTMLLIElement>) => {
+      dispatch(
+        moveTodo({
+          sourceBoardId,
+          sourceTodoId,
+          targetBoard,
+          targetTodo,
+        })
+      );
+    }
+  };
+
+  const onDragOver = (e: React.DragEvent<HTMLLIElement>) => {
     e.preventDefault();
 
     const isTodoItem = e.currentTarget.dataset.item === "todo";
 
     if (isTodoItem) {
-      const targetElement = e.target as HTMLLIElement;
+      const targetElement = e.currentTarget as HTMLLIElement;
       targetElement.style.borderColor = "#9999EA";
     }
-  }, []);
+  };
 
-  const onDragEnd = useCallback((e: React.DragEvent<HTMLLIElement>) => {
-    const targetElement = e.target as HTMLLIElement;
+  const onDragEnd = (e: React.DragEvent<HTMLLIElement>) => {
+    const targetElement = e.currentTarget as HTMLLIElement;
     targetElement.style.borderColor = "#fff";
-  }, []);
+  };
 
-  const addBoard = () => {
+  const addBoard = (dispatch: Dispatch<any>) => {
     dispatch(
       openModal({
         modalTitle: "Add new board",
@@ -88,7 +79,7 @@ function BoardComponent() {
     );
   };
 
-  const onEditBoard = (board: Board) => {
+  const onEditBoard = (board: Board, dispatch: Dispatch<any>) => {
     dispatch(setCurrentBoard({ currentBoard: board }));
 
     dispatch(
@@ -103,12 +94,12 @@ function BoardComponent() {
     dispatch(closeMenu());
   };
 
-  const onDeleteBoard = (boardId: number) => {
+  const onDeleteBoard = (boardId: number, dispatch: Dispatch<any>) => {
     dispatch(deleteBoard({ boardId }));
     dispatch(closeMenu());
   };
 
-  const addTodo = (currentBoard: Board) => {
+  const addTodo = (currentBoard: Board, dispatch: Dispatch<any>) => {
     dispatch(setCurrentBoard({ currentBoard }));
 
     dispatch(
@@ -120,7 +111,7 @@ function BoardComponent() {
     );
   };
 
-  const onEditTodo = (board: Board, todo: Todo) => {
+  const onEditTodo = (board: Board, todo: Todo, dispatch: Dispatch<any>) => {
     dispatch(setCurrentBoard({ currentBoard: board }));
     dispatch(setCurrentTodo({ currentTodo: todo }));
 
@@ -134,88 +125,33 @@ function BoardComponent() {
     );
   };
 
-  const onDeleteTodo = (boardId: number, todoId: number) => {
+  const onDeleteTodo = (
+    boardId: number,
+    todoId: number,
+    dispatch: Dispatch<any>
+  ) => {
     dispatch(deleteTodo({ boardId, todoId }));
   };
 
   return (
-    <>
-      <div className="mt-20 h-[85vh]">
-        <ul className="flex overflow-x-auto pb-3 ">
-          {boards.map((board) => (
-            <li
-              key={board.id}
-              className="border border-[#9333EA] flex flex-col justify-between rounded p-3 mr-4 min-w-60 max-w-60"
-            >
-              <BoardTitle
-                id={board.id}
-                title={board.name}
-                onEdit={() => onEditBoard(board)}
-                onDelete={() => onDeleteBoard(board.id)}
-              />
-              <div className="overflow-y-auto px-2 h-[50vh]">
-                <ul>
-                  {board.todos.length >= 5 ? (
-                    <>
-                      {board.todos.map((todo) => (
-                        <TodoComponent
-                          key={todo.id}
-                          todo={todo}
-                          board={board}
-                          onDragStart={() => onDragStart(board, todo)}
-                          onDrop={(e) => onDrop(e, board, todo)}
-                          onDragOver={onDragOver}
-                          onDragEnd={onDragEnd}
-                          onEdit={onEditTodo}
-                          onDelete={onDeleteTodo}
-                        />
-                      ))}
-                    </>
-                  ) : (
-                    <>
-                      {board.todos.map((todo) => (
-                        <TodoComponent
-                          key={todo.id}
-                          todo={todo}
-                          board={board}
-                          onDragStart={() => onDragStart(board, todo)}
-                          onDrop={(e) => onDrop(e, board, todo)}
-                          onDragOver={onDragOver}
-                          onDragEnd={onDragEnd}
-                          onEdit={onEditTodo}
-                          onDelete={onDeleteTodo}
-                        />
-                      ))}
-                      <li
-                        data-item="todo"
-                        className="h-[39vh]"
-                        onDrop={(e) => onDrop(e, board, null)}
-                        onDragOver={onDragOver}
-                      />
-                    </>
-                  )}
-                </ul>
-              </div>
-              <button
-                className="bg-[#9333EA] text-white font-bold rounded p-4 mt-2 ml-2 mr-2"
-                onClick={() => addTodo(board)}
-              >
-                Add todo
-              </button>
-            </li>
-          ))}
-          <li>
-            <button
-              className="border border-[#9333EA] rounded p-4 w-64"
-              onClick={addBoard}
-            >
-              Add board
-            </button>
-          </li>
-        </ul>
-      </div>
-      {isModalOpen && <ModalComponent />}
-    </>
+    <div className="mt-16">
+      <ul className="flex overflow-x-auto pb-3 ">
+        <BoardColumn
+          boards={boards}
+          addBoard={addBoard}
+          onEditBoard={onEditBoard}
+          onDeleteBoard={onDeleteBoard}
+          addTodo={addTodo}
+          onEditTodo={onEditTodo}
+          onDeleteTodo={onDeleteTodo}
+          onDragStart={onDragStart}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+          onDragEnd={onDragEnd}
+          dispatch={dispatch}
+        />
+      </ul>
+    </div>
   );
 }
 

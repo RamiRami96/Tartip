@@ -1,16 +1,19 @@
 import Container from "./components/Container";
-
+import Header from "./components/Header";
 import BoardComponent from "./components/Board";
+import ModalComponent from "./components/Modal";
+import { useTypedSelector } from "./hooks/reduxHooks";
 
 function App() {
+  const { isModalOpen } = useTypedSelector((state) => state.modal);
+
   return (
     <Container>
-      <header className="w-full rounded-2xl text-center mt-4 pt-6 pb-6 text-white">
-        <h1>CTC App</h1>
-      </header>
+      <Header />
       <main>
         <BoardComponent />
       </main>
+      {isModalOpen && <ModalComponent />}
     </Container>
   );
 }
