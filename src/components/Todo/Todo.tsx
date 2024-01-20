@@ -1,4 +1,4 @@
-import { Dispatch, memo, useCallback } from "react";
+import { Dispatch, memo } from "react";
 import { useTypedSelector } from "../../hooks/reduxHooks";
 
 import MenuComponent from "../Menu";
@@ -38,26 +38,17 @@ const TodoComponent = memo(function TodoComponent({
     (state) => state.menu
   );
 
-  const openBoardMenu = useCallback(
-    (board: Board, todo: Todo) => {
-      dispatch(openMenu({ boardId: board.id, todoId: todo.id }));
-    },
-    [dispatch, board, todo]
-  );
+  const openBoardMenu = (board: Board, todo: Todo) => {
+    dispatch(openMenu({ boardId: board.id, todoId: todo.id }));
+  };
 
-  const onEditHandle = useCallback(
-    (board: Board, todo: Todo) => {
-      onEdit(board, todo, dispatch);
-    },
-    [dispatch, board, todo]
-  );
+  const onEditHandle = (board: Board, todo: Todo) => {
+    onEdit(board, todo, dispatch);
+  };
 
-  const onDeleteHandle = useCallback(
-    (board: Board, todo: Todo) => {
-      onDelete(board.id, todo.id, dispatch);
-    },
-    [board, todo, dispatch]
-  );
+  const onDeleteHandle = (board: Board, todo: Todo) => {
+    onDelete(board.id, todo.id, dispatch);
+  };
 
   console.log("rerender");
 
