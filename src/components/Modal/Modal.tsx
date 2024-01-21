@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useTypedSelector } from "../../hooks/reduxHooks";
 
 import {
+  deleteBoard,
+  deleteTodo,
   editBoard,
   editTodo,
   setBoard,
@@ -10,6 +12,7 @@ import {
 import { closeModal } from "../../state/slices/modalSlice";
 import { generateUniqueId } from "../../helpers/generateUniqueId";
 import { modalMode } from "../../models/modalMode.model";
+import { CloseIcon } from "../../icons/CloseIcon";
 
 function Modal() {
   const dispatch = useAppDispatch();
@@ -100,6 +103,42 @@ function Modal() {
     }
   };
 
+  const handleDelete = (mode: modalMode) => {
+    switch (mode) {
+      case "editBoard":
+        dispatch(
+          deleteBoard({
+            boardId: currentBoard!.id,
+          })
+        );
+        dispatch(closeModal());
+        setError("");
+
+        break;
+
+      case "editTodo":
+        dispatch(
+          deleteTodo({
+            boardId: currentBoard!.id,
+            todoId: currentTodo!.id,
+          })
+        );
+        dispatch(closeModal());
+        setError("");
+
+        break;
+
+      case "default":
+        setError("Oops.. something unexpected happened :(");
+        break;
+
+      default:
+        setError("Oops.. something unexpected happened :(");
+
+        break;
+    }
+  };
+
   const handleCloseModal = () => {
     dispatch(closeModal());
   };
@@ -125,8 +164,14 @@ function Modal() {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div
         ref={modalRef}
-        className="bg-[#1f2937] border border-white p-7 rounded-md w-full sm:w-80 md:w-96"
+        className="relative bg-[#1f2937] border border-white p-7 rounded-md w-full sm:w-80 md:w-96"
       >
+        <button
+          onClick={handleCloseModal}
+          className="absolute top-3 right-3 h-8 w-8 hover:bg-[#9b4ee4] transition-all duration-300 rounded-full flex justify-center items-center"
+        >
+          <CloseIcon />
+        </button>
         <h2 className="text-lg font-semibold mb-2">{modalTitle}</h2>
         <div className="mt-4 ">
           <input
@@ -136,22 +181,24 @@ function Modal() {
             placeholder={modalPlaceholder}
             className="border-2 border-[#374151] p-2 mb-2 w-full rounded  text-white h-16 bg-[#111827]"
           />
-          <p className="text-red-500">{error}</p>
+          <p className="h-2 text-red-500">{error}</p>
         </div>
 
-        <div className="mt-6 flex">
+        <div className="mt-6 flex justify-end">
           <button
             onClick={() => handleSubmit(modalMode)}
             className="bg-[#9333EA] text-white font-bold py-3 px-4 rounded mr-2"
           >
             {buttonText}
           </button>
-          <button
-            onClick={handleCloseModal}
-            className="bg-[#9333EA] text-white font-bold py-3 px-4 rounded mr-2"
-          >
-            Cancel
-          </button>
+          {(modalMode === "editBoard" || modalMode === "editTodo") && (
+            <button
+              onClick={() => handleDelete(modalMode)}
+              className="bg-[#9333EA] text-white font-bold py-3 px-4 rounded mr-2"
+            >
+              Delete
+            </button>
+          )}
         </div>
       </div>
     </div>

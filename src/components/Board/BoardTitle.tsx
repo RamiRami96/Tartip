@@ -1,38 +1,22 @@
 import { memo } from "react";
-import { useAppDispatch, useTypedSelector } from "../../hooks/reduxHooks";
-
-import MenuComponent from "../Menu";
-import { openMenu } from "../../state/slices/menuSlice";
+import { Board } from "../../models/board.model";
+import { ModalIcon } from "../../icons/ModalIcon";
 
 type Props = {
-  id: number;
-  title: string;
-  onEdit: () => void;
-  onDelete: () => void;
+  board: Board;
+  onEdit: (currentBoard: Board) => void;
 };
 
-export const BoardTitle = memo(function BoardTitle({
-  id,
-  title,
-  onEdit,
-  onDelete,
-}: Props) {
-  const dispatch = useAppDispatch();
-
-  const { isMenuOpen, boardId, todoId } = useTypedSelector(
-    (state) => state.menu
-  );
-
-  const openBoardMenu = () => {
-    dispatch(openMenu({ boardId: id, todoId: null }));
-  };
-
+export const BoardTitle = memo(function BoardTitle({ board, onEdit }: Props) {
   return (
-    <button className="relative" onClick={openBoardMenu}>
-      <h2 className="text-left pl-2 mb-4 overflow-hidden">{title}</h2>
-      {isMenuOpen && boardId === id && !todoId && (
-        <MenuComponent onEdit={onEdit} onDelete={onDelete} />
-      )}
-    </button>
+    <div className="flex justify-between px-2">
+      <h2 className="text-left  mr-2 mb-4 overflow-hidden">{board.name}</h2>
+      <button
+        className="ml-2 p-1 h-8 w-8 hover:bg-[#9b4ee4] transition-all duration-300 rounded-full"
+        onClick={() => onEdit(board)}
+      >
+        <ModalIcon />
+      </button>
+    </div>
   );
 });

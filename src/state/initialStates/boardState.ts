@@ -37,7 +37,12 @@ export const initialStateBoard: BoardState = {
     {
       id: 3,
       name: "Find girlfriend",
-      todos: [],
+      todos: [
+        {
+          id: 8,
+          title: "Todo 8",
+        },
+      ],
     },
   ],
   currentBoard: null,

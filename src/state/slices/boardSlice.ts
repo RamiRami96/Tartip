@@ -31,8 +31,6 @@ export const boardSlice = createSlice({
 
       if (boardIndex !== -1) {
         state.boards[boardIndex].name = newBoardName;
-        state.currentBoard = null;
-        state.currentTodo = null;
       }
     },
 
@@ -45,8 +43,6 @@ export const boardSlice = createSlice({
 
       if (boardIndex !== -1) {
         state.boards.splice(boardIndex, 1);
-        state.currentBoard = null;
-        state.currentTodo = null;
       }
     },
     moveTodo: (

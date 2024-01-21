@@ -1,20 +1,17 @@
-import React, { Dispatch, useCallback } from "react";
+import { useCallback } from "react";
+import { useAppDispatch, useTypedSelector } from "../../hooks/reduxHooks";
+
 import { BoardTitle } from "./BoardTitle";
 import TodoComponent from "../Todo";
 
 import {
-  deleteBoard,
-  deleteTodo,
   moveTodo,
   setCurrentBoard,
   setCurrentTodo,
 } from "../../state/slices/boardSlice";
 import { openModal } from "../../state/slices/modalSlice";
-import { closeMenu } from "../../state/slices/menuSlice";
-
 import { Board } from "../../models/board.model";
 import { Todo } from "../../models/todo.model";
-import { useAppDispatch, useTypedSelector } from "../../hooks/reduxHooks";
 
 function BoardComponent() {
   const dispatch = useAppDispatch();
@@ -24,19 +21,18 @@ function BoardComponent() {
   );
 
   const onDragStart = useCallback(
-    (board: Board, todo: Todo, dispatch: Dispatch<any>) => {
+    (board: Board, todo: Todo) => {
       dispatch(setCurrentBoard({ currentBoard: board }));
       dispatch(setCurrentTodo({ currentTodo: todo }));
     },
-    []
+    [dispatch]
   );
 
   const onDrop = useCallback(
     (
       e: React.DragEvent<HTMLLIElement>,
       targetBoard: Board,
-      targetTodo: Todo | null,
-      dispatch: Dispatch<any>
+      targetTodo: Todo | null
     ) => {
       e.preventDefault();
 
@@ -76,7 +72,7 @@ function BoardComponent() {
     targetElement.style.borderColor = "#fff";
   }, []);
 
-  const addBoard = (dispatch: Dispatch<any>) => {
+  const addBoard = () => {
     dispatch(
       openModal({
         modalTitle: "Add new board",
@@ -86,30 +82,20 @@ function BoardComponent() {
     );
   };
 
-  const onEditBoard = useCallback((board: Board, dispatch: Dispatch<any>) => {
-    dispatch(setCurrentBoard({ currentBoard: board }));
+  const editBoard = useCallback((currentBoard: Board) => {
+    dispatch(setCurrentBoard({ currentBoard }));
 
     dispatch(
       openModal({
-        modalTitle: "Edit board",
-        modalPlaceholder: "Enter new title of board",
+        modalTitle: "Edit/Delete Board",
+        modalPlaceholder: "Enter title of board",
         modalMode: "editBoard",
         buttonText: "Edit",
       })
     );
-
-    dispatch(closeMenu());
   }, []);
 
-  const onDeleteBoard = useCallback(
-    (boardId: number, dispatch: Dispatch<any>) => {
-      dispatch(deleteBoard({ boardId }));
-      dispatch(closeMenu());
-    },
-    []
-  );
-
-  const addTodo = (currentBoard: Board, dispatch: Dispatch<any>) => {
+  const addTodo = (currentBoard: Board) => {
     dispatch(setCurrentBoard({ currentBoard }));
 
     dispatch(
@@ -121,29 +107,19 @@ function BoardComponent() {
     );
   };
 
-  const onEditTodo = useCallback(
-    (board: Board, todo: Todo, dispatch: Dispatch<any>) => {
-      dispatch(setCurrentBoard({ currentBoard: board }));
-      dispatch(setCurrentTodo({ currentTodo: todo }));
+  const onEditTodo = useCallback((currentBoard: Board, currentTodo: Todo) => {
+    dispatch(setCurrentBoard({ currentBoard }));
+    dispatch(setCurrentTodo({ currentTodo }));
 
-      dispatch(
-        openModal({
-          modalTitle: "Edit todo",
-          modalPlaceholder: "Enter new title of todo",
-          modalMode: "editTodo",
-          buttonText: "Edit",
-        })
-      );
-    },
-    []
-  );
-
-  const onDeleteTodo = useCallback(
-    (boardId: number, todoId: number, dispatch: Dispatch<any>) => {
-      dispatch(deleteTodo({ boardId, todoId }));
-    },
-    []
-  );
+    dispatch(
+      openModal({
+        modalTitle: "Edit/Delete todo",
+        modalPlaceholder: "Enter title of todo",
+        modalMode: "editTodo",
+        buttonText: "Edit",
+      })
+    );
+  }, []);
 
   return (
     <div className="mt-16">
@@ -152,18 +128,13 @@ function BoardComponent() {
           {boards.map((board) => (
             <li
               key={board.id}
-              className="border border-[#9333EA] flex flex-col justify-between rounded p-3 mr-4 min-w-60 max-w-60"
+              className="border border-[#9333EA] flex flex-col justify-between rounded p-3 mr-4 min-w-72 max-w-72"
             >
-              <BoardTitle
-                id={board.id}
-                title={board.name}
-                onEdit={() => onEditBoard(board, dispatch)}
-                onDelete={() => onDeleteBoard(board.id, dispatch)}
-              />
+              <BoardTitle board={board} onEdit={editBoard} />
               <div className="overflow-y-auto p-2 px-2 h-[55vh]">
                 <button
                   className="bg-[#9333EA] height-[65.6px] text-white font-bold rounded p-4 mb-2 w-full"
-                  onClick={() => addTodo(board, dispatch)}
+                  onClick={() => addTodo(board)}
                 >
                   Add todo
                 </button>
@@ -173,21 +144,19 @@ function BoardComponent() {
                       key={todo.id}
                       todo={todo}
                       board={board}
-                      onDragStart={() => onDragStart(board, todo, dispatch)}
-                      onDrop={(e) => onDrop(e, board, todo, dispatch)}
+                      onDragStart={onDragStart}
+                      onDrop={onDrop}
                       onDragOver={onDragOver}
                       onDragEnd={onDragEnd}
                       onEdit={onEditTodo}
-                      onDelete={onDeleteTodo}
-                      dispatch={dispatch}
                     />
                   ))}
                   {board.todos.length <= 4 && (
                     <li
                       data-item="todo"
-                      className="h-[39vh]"
+                      className="h-[34vh]"
                       onDrop={(e: React.DragEvent<HTMLLIElement>) =>
-                        onDrop(e, board, null, dispatch)
+                        onDrop(e, board, null)
                       }
                       onDragOver={onDragOver}
                     />
@@ -199,7 +168,7 @@ function BoardComponent() {
           <li>
             <button
               className="border border-[#9333EA] rounded p-4 w-64"
-              onClick={() => addBoard(dispatch)}
+              onClick={addBoard}
             >
               Add board
             </button>
