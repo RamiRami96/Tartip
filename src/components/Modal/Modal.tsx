@@ -69,7 +69,7 @@ function Modal() {
 
       case "addTodo":
         const newTodo = {
-          id: Date.now(),
+          id: generateUniqueId(),
           title: value,
         };
 
