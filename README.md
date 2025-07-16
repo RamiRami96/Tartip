@@ -43,13 +43,6 @@ npm run dev
 
 4. Open your browser and navigate to `http://localhost:5173`
 
-## 🛠️ Available Scripts
-
-- `yarn dev` - Start the development server
-- `yarn build` - Build the project for production
-- `yarn preview` - Preview the production build
-- `yarn lint` - Run ESLint to check code quality
-
 ## 📁 Project Structure
 
 ```
