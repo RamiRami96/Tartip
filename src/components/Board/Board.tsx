@@ -93,7 +93,7 @@ function BoardComponent() {
         buttonText: "Edit",
       })
     );
-  }, []);
+  }, [dispatch]);
 
   const addTodo = (currentBoard: Board) => {
     dispatch(setCurrentBoard({ currentBoard }));
@@ -119,7 +119,7 @@ function BoardComponent() {
         buttonText: "Edit",
       })
     );
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="mt-16">

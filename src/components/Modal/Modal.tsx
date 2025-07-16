@@ -42,7 +42,7 @@ function Modal() {
     }
 
     switch (mode) {
-      case "addBoard":
+      case "addBoard": {
         const newBoard = {
           id: generateUniqueId(),
           name: value,
@@ -54,6 +54,7 @@ function Modal() {
         setError("");
 
         break;
+      }
 
       case "editBoard":
         dispatch(
@@ -67,7 +68,7 @@ function Modal() {
 
         break;
 
-      case "addTodo":
+      case "addTodo": {
         const newTodo = {
           id: generateUniqueId(),
           title: value,
@@ -78,6 +79,7 @@ function Modal() {
         setError("");
 
         break;
+      }
 
       case "editTodo":
         dispatch(

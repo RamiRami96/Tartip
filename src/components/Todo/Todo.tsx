@@ -30,7 +30,7 @@ const TodoComponent = memo(function TodoComponent({
   return (
     <li
       data-item="todo"
-      className="flex p-4 mt-2 bg-[#111827] border border-[#93333EA] text-white cursor-grab rounded"
+      className="flex p-4 mt-2 bg-[#111827] border border-[#9333EA] text-white cursor-grab rounded"
       draggable
       onDragStart={() => onDragStart(board, todo)}
       onDrop={(e) => onDrop(e, board, todo)}

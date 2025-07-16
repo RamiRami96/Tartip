@@ -68,9 +68,19 @@ export const boardSlice = createSlice({
         (col) => col.id === targetBoard.id
       );
 
+      // Check if both boards exist
+      if (sourceBoardIndex === -1 || targetBoardIndex === -1) {
+        return;
+      }
+
       const draggedTodo = state.boards[sourceBoardIndex].todos.find(
         (todo) => todo.id === sourceTodoId
-      )!;
+      );
+
+      // Check if the todo exists
+      if (!draggedTodo) {
+        return;
+      }
 
       state.boards[sourceBoardIndex].todos = state.boards[
         sourceBoardIndex
@@ -120,6 +130,12 @@ export const boardSlice = createSlice({
       const { boardId, todoId, title } = action.payload;
 
       const boardIndex = state.boards.findIndex((col) => col.id === boardId);
+      
+      // Check if board exists
+      if (boardIndex === -1) {
+        return;
+      }
+
       const todoIndex = state.boards[boardIndex].todos.findIndex(
         (todo) => todo.id === todoId
       );
@@ -140,6 +156,12 @@ export const boardSlice = createSlice({
       const { boardId, todoId } = action.payload;
 
       const boardIndex = state.boards.findIndex((col) => col.id === boardId);
+      
+      // Check if board exists
+      if (boardIndex === -1) {
+        return;
+      }
+
       const todoIndex = state.boards[boardIndex].todos.findIndex(
         (todo) => todo.id === todoId
       );
