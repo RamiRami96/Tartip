@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useAppDispatch, useTypedSelector } from "../../hooks/reduxHooks";
+import { useAppDispatch, useTypedSelector } from "../../helpers/typedRedux";
 
 import {
   deleteBoard,
@@ -13,8 +13,9 @@ import { closeModal } from "../../state/slices/modalSlice";
 import { generateUniqueId } from "../../helpers/generateUniqueId";
 import { modalMode } from "../../models/modalMode.model";
 import { CloseIcon } from "../../icons/CloseIcon";
+import { ERROR_MESSAGES, MODAL_MODES } from "../../constants/appConstants";
 
-function Modal() {
+function Modal(): JSX.Element {
   const dispatch = useAppDispatch();
   const { modalPlaceholder, modalTitle, modalMode, buttonText } =
     useTypedSelector((state) => state.modal);
@@ -24,25 +25,25 @@ function Modal() {
 
   const [value, setValue] = useState(() => {
     switch (modalMode) {
-      case "editBoard":
+      case MODAL_MODES.EDIT_BOARD:
         return currentBoard?.name;
-      case "editTodo":
+      case MODAL_MODES.EDIT_TODO:
         return currentTodo?.title;
       default:
         return "";
     }
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = (mode: modalMode) => {
+  const handleSubmit = (mode: modalMode): void => {
     if (!value) {
-      setError("value required!");
+      setError(ERROR_MESSAGES.VALUE_REQUIRED);
       return;
     }
 
     switch (mode) {
-      case "addBoard": {
+      case MODAL_MODES.ADD_BOARD: {
         const newBoard = {
           id: generateUniqueId(),
           name: value,
@@ -56,7 +57,7 @@ function Modal() {
         break;
       }
 
-      case "editBoard":
+      case MODAL_MODES.EDIT_BOARD:
         dispatch(
           editBoard({
             boardId: currentBoard!.id,
@@ -68,7 +69,7 @@ function Modal() {
 
         break;
 
-      case "addTodo": {
+      case MODAL_MODES.ADD_TODO: {
         const newTodo = {
           id: generateUniqueId(),
           title: value,
@@ -81,7 +82,7 @@ function Modal() {
         break;
       }
 
-      case "editTodo":
+      case MODAL_MODES.EDIT_TODO:
         dispatch(
           editTodo({
             boardId: currentBoard!.id,
@@ -94,20 +95,20 @@ function Modal() {
 
         break;
 
-      case "default":
-        setError("Oops.. something unexpected happened :(");
+      case MODAL_MODES.DEFAULT:
+        setError(ERROR_MESSAGES.UNEXPECTED_ERROR);
         break;
 
       default:
-        setError("Oops.. something unexpected happened :(");
+        setError(ERROR_MESSAGES.UNEXPECTED_ERROR);
 
         break;
     }
   };
 
-  const handleDelete = (mode: modalMode) => {
+  const handleDelete = (mode: modalMode): void => {
     switch (mode) {
-      case "editBoard":
+      case MODAL_MODES.EDIT_BOARD:
         dispatch(
           deleteBoard({
             boardId: currentBoard!.id,
@@ -118,7 +119,7 @@ function Modal() {
 
         break;
 
-      case "editTodo":
+      case MODAL_MODES.EDIT_TODO:
         dispatch(
           deleteTodo({
             boardId: currentBoard!.id,
@@ -130,23 +131,19 @@ function Modal() {
 
         break;
 
-      case "default":
-        setError("Oops.. something unexpected happened :(");
-        break;
-
-      default:
-        setError("Oops.. something unexpected happened :(");
+      case MODAL_MODES.DEFAULT:
+        setError(ERROR_MESSAGES.UNEXPECTED_ERROR);
 
         break;
     }
   };
 
-  const handleCloseModal = () => {
+  const handleCloseModal = (): void => {
     dispatch(closeModal());
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       if (
         modalRef.current &&
         !modalRef.current.contains(event.target as Node)
@@ -193,7 +190,7 @@ function Modal() {
           >
             {buttonText}
           </button>
-          {(modalMode === "editBoard" || modalMode === "editTodo") && (
+          {(modalMode === MODAL_MODES.EDIT_BOARD || modalMode === MODAL_MODES.EDIT_TODO) && (
             <button
               onClick={() => handleDelete(modalMode)}
               className="bg-[#9333EA] text-white font-bold py-3 px-4 rounded mr-2"

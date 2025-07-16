@@ -26,7 +26,7 @@ const TodoComponent = memo(function TodoComponent({
   onDragOver,
   onDragEnd,
   onEdit,
-}: Props) {
+}: Props): JSX.Element {
   return (
     <li
       data-item="todo"

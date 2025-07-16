@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useAppDispatch, useTypedSelector } from "../../hooks/reduxHooks";
+import { useAppDispatch, useTypedSelector } from "../../helpers/typedRedux";
 
 import { BoardTitle } from "./BoardTitle";
 import TodoComponent from "../Todo";
@@ -12,8 +12,9 @@ import {
 import { openModal } from "../../state/slices/modalSlice";
 import { Board } from "../../models/board.model";
 import { Todo } from "../../models/todo.model";
+import { MODAL_TITLES, MODAL_PLACEHOLDERS, UI_BUTTONS, ACTION_BUTTONS, MODAL_MODES } from "../../constants/appConstants";
 
-function BoardComponent() {
+function BoardComponent(): JSX.Element {
   const dispatch = useAppDispatch();
 
   const { boards, currentBoard, currentTodo } = useTypedSelector(
@@ -21,7 +22,7 @@ function BoardComponent() {
   );
 
   const onDragStart = useCallback(
-    (board: Board, todo: Todo) => {
+    (board: Board, todo: Todo): void => {
       dispatch(setCurrentBoard({ currentBoard: board }));
       dispatch(setCurrentTodo({ currentTodo: todo }));
     },
@@ -33,7 +34,7 @@ function BoardComponent() {
       e: React.DragEvent<HTMLLIElement>,
       targetBoard: Board,
       targetTodo: Todo | null
-    ) => {
+    ): void => {
       e.preventDefault();
 
       const targetElement = e.currentTarget as HTMLLIElement;
@@ -56,7 +57,7 @@ function BoardComponent() {
     [dispatch, currentBoard, currentTodo]
   );
 
-  const onDragOver = useCallback((e: React.DragEvent<HTMLLIElement>) => {
+  const onDragOver = useCallback((e: React.DragEvent<HTMLLIElement>): void => {
     e.preventDefault();
 
     const isTodoItem = e.currentTarget.dataset.item === "todo";
@@ -67,62 +68,62 @@ function BoardComponent() {
     }
   }, []);
 
-  const onDragEnd = useCallback((e: React.DragEvent<HTMLLIElement>) => {
+  const onDragEnd = useCallback((e: React.DragEvent<HTMLLIElement>): void => {
     const targetElement = e.currentTarget as HTMLLIElement;
     targetElement.style.borderColor = "#fff";
   }, []);
 
-  const addBoard = () => {
+  const addBoard = (): void => {
     dispatch(
       openModal({
-        modalTitle: "Add new board",
-        modalPlaceholder: "Enter title of board",
-        modalMode: "addBoard",
+        modalTitle: MODAL_TITLES.ADD_NEW_BOARD,
+        modalPlaceholder: MODAL_PLACEHOLDERS.ENTER_BOARD_TITLE,
+        modalMode: MODAL_MODES.ADD_BOARD,
       })
     );
   };
 
-  const editBoard = useCallback((currentBoard: Board) => {
+  const editBoard = useCallback((currentBoard: Board): void => {
     dispatch(setCurrentBoard({ currentBoard }));
 
     dispatch(
       openModal({
-        modalTitle: "Edit/Delete Board",
-        modalPlaceholder: "Enter title of board",
-        modalMode: "editBoard",
-        buttonText: "Edit",
+        modalTitle: MODAL_TITLES.EDIT_DELETE_BOARD,
+        modalPlaceholder: MODAL_PLACEHOLDERS.ENTER_BOARD_TITLE,
+        modalMode: MODAL_MODES.EDIT_BOARD,
+        buttonText: ACTION_BUTTONS.EDIT,
       })
     );
   }, [dispatch]);
 
-  const addTodo = (currentBoard: Board) => {
+  const addTodo = (currentBoard: Board): void => {
     dispatch(setCurrentBoard({ currentBoard }));
 
     dispatch(
       openModal({
-        modalTitle: "Add new todo",
-        modalPlaceholder: "Enter title of todo",
-        modalMode: "addTodo",
+        modalTitle: MODAL_TITLES.ADD_NEW_TODO,
+        modalPlaceholder: MODAL_PLACEHOLDERS.ENTER_TODO_TITLE,
+        modalMode: MODAL_MODES.ADD_TODO,
       })
     );
   };
 
-  const onEditTodo = useCallback((currentBoard: Board, currentTodo: Todo) => {
+  const onEditTodo = useCallback((currentBoard: Board, currentTodo: Todo): void => {
     dispatch(setCurrentBoard({ currentBoard }));
     dispatch(setCurrentTodo({ currentTodo }));
 
     dispatch(
       openModal({
-        modalTitle: "Edit/Delete todo",
-        modalPlaceholder: "Enter title of todo",
-        modalMode: "editTodo",
-        buttonText: "Edit",
+        modalTitle: MODAL_TITLES.EDIT_DELETE_TODO,
+        modalPlaceholder: MODAL_PLACEHOLDERS.ENTER_TODO_TITLE,
+        modalMode: MODAL_MODES.EDIT_TODO,
+        buttonText: ACTION_BUTTONS.EDIT,
       })
     );
   }, [dispatch]);
 
   return (
-    <div className="mt-16">
+    <main className="mt-16">
       <ul className="flex overflow-x-auto pb-3 ">
         <>
           {boards.map((board) => (
@@ -136,7 +137,7 @@ function BoardComponent() {
                   className="bg-[#9333EA] height-[65.6px] text-white font-bold rounded p-4 mb-2 w-full"
                   onClick={() => addTodo(board)}
                 >
-                  Add todo
+                  {UI_BUTTONS.ADD_TODO}
                 </button>
                 <ul>
                   {board.todos.map((todo) => (
@@ -170,12 +171,12 @@ function BoardComponent() {
               className="border border-[#9333EA] rounded p-4 w-64"
               onClick={addBoard}
             >
-              Add board
+              {UI_BUTTONS.ADD_BOARD}
             </button>
           </li>
         </>
       </ul>
-    </div>
+    </main>
   );
 }
 

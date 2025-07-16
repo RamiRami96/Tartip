@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { modalMode } from "../../models/modalMode.model";
+import { MODAL_MODES } from "../../constants/appConstants";
 import { initialStateModal } from "../initialStates/modalState";
 
 export const modalSlice = createSlice({
@@ -31,7 +32,7 @@ export const modalSlice = createSlice({
       state.isModalOpen = false;
       state.modalTitle = "";
       state.modalPlaceholder = "";
-      state.modalMode = "default";
+      state.modalMode = MODAL_MODES.DEFAULT;
     },
   },
 });
